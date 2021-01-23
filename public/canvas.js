@@ -123,8 +123,11 @@ const draw = () => {
     ctx.fillStyle = backgroundColor;
     ctx.clearRect(0,0,c.width,c.height);
     ctx.fillRect(0,0,c.width,c.height);
-
-    pw = c.width * 5 / cols;
+    
+    if(c.width < c.height)
+        pw = c.width * 5 / cols;
+    else   
+        pw = c.height * 5 / rows;
 
     if(players === null) return;
 
@@ -156,6 +159,33 @@ const draw = () => {
         ctx.textBaseline = "middle";
         ctx.font = "20px Monospace";
         ctx.fillText('Press arrow keys or A,W,D,S to start',c.width/2,c.height*.2);
+    }
+
+    if(oM !== undefined && m !== undefined){
+        const angle = Math.atan2(m.y-oM.y,m.x-oM.x);
+        const len = 75;
+        const dx = .75*len*Math.cos(angle);
+        const dy = .75*len*Math.sin(angle);
+        
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(0,0,0,.75)";
+        ctx.lineWidth = 5;
+        ctx.moveTo(oM.x,oM.y);
+        ctx.lineTo(oM.x + dx,oM.y + dy);
+        ctx.stroke();
+
+        for(let a=Math.PI/4;a < 9*Math.PI/4;a += Math.PI/2){
+            const dx = .5*len*Math.cos(a);
+            const dy = .5*len*Math.sin(a);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(0,0,0,.3)";
+            ctx.lineWidth = 5;
+            ctx.moveTo(oM.x,oM.y);
+            ctx.lineTo(oM.x + dx,oM.y + dy);
+            ctx.stroke();
+        }
+        ctx.lineWidth = 1;
     }
 
 }

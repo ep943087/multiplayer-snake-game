@@ -68,3 +68,43 @@ document.addEventListener('keydown',(e)=>{
             break;
     }
 })
+
+let oM;
+let m;
+
+function getTouchPos(e,i){
+	let rect = c.getBoundingClientRect();
+	return{
+		x: e.touches[i].clientX - rect.left,
+		y: e.touches[i].clientY - rect.top
+	}
+}
+
+document.addEventListener('touchstart',e=>{
+	if(e.target==c)
+		e.preventDefault();
+},{passive: false});
+
+document.addEventListener('touchmove',e=>{
+	if(e.target==c)
+		e.preventDefault();
+},{passive: false});
+
+c.addEventListener('touchstart',e=>{
+	oM = getTouchPos(e,e.touches.length-1);	
+}, false);
+
+c.addEventListener('touchmove',e=>{
+        m = getTouchPos(e,e.touches.length-1);
+        angle = Math.atan2(m.y-oM.y,m.x-oM.x);
+        socket.emit('change-angle',{angle});
+	//oM = m;
+
+},false);
+
+document.addEventListener('touchend',e=>{
+	if(e.touches.length==0){
+		pm = "none";
+		m = oM = undefined;
+	}
+},false);

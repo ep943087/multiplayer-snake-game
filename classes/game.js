@@ -11,6 +11,10 @@ class Game{
         this.cols = 100;
         this.players = [];
         this.fruitCount = 125;
+        this.allTimeHighest = {
+            score: 0,
+            username: "No one",
+        }
         this.setFruits();
     }
 
@@ -88,14 +92,35 @@ class Game{
         });
         
     }
-    changeDir(id,dir){
-        const player = this.players.find(player=>{
+    findPlayer(id){
+        return this.players.find(player=>{
             return id === player.id;
         });
+    }
+    changeDir(id,dir){
+        const player = this.findPlayer(id);
         if(!player.dead)
             player.dir = dir;
         if(!player.playing){
             player.playing = true;
+        }
+    }
+
+    changeAngle(id,angle){
+        const player = this.findPlayer(id);
+        player.playing = true;
+        if(angle>=-3*Math.PI/4&&angle<=-Math.PI/4){
+            player.dir = UP;
+        //pm = "up";
+        } else if(angle>=Math.PI/4&&angle<=3*Math.PI/4){
+            player.dir = DOWN;
+        //pm = "down";
+        } else if(angle>=-Math.PI/4&&angle<=Math.PI/4){
+            player.dir = RIGHT;
+        //pm = "right";
+        } else if((angle>=3*Math.PI/4&&angle<=Math.PI)||(angle<=-3*Math.PI/4&&angle>=-Math.PI)){
+            player.dir = LEFT;
+        //pm = "left";
         }
     }
 

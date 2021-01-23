@@ -73,6 +73,10 @@ io.on('connection',(socket)=>{
     socket.on('right',()=>{
         game.changeDir(socket.id,RIGHT);
     })
+
+    socket.on('change-angle',({angle})=>{
+        game.changeAngle(socket.id,angle);
+    })
     socket.on('disconnect',()=>{
         game.removePlayer(socket.id);
         console.log('Players: ' + game.players.length);

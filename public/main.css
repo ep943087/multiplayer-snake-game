@@ -14,9 +14,9 @@ body{
 
 .game__container{
     width: 95vw;
-    max-width: 500px;
+    max-width: 550px;
     height: 80vh;
-    max-height: 500px;
+    max-height: 550px;
     position: relative;
     overflow: hidden;
 }
@@ -42,12 +42,18 @@ body{
 
 .score__container{
     width: 95vw;
-    max-width: 500px;
+    max-width: 400px;
     height: 80vh;
     max-height: 500px;
 }
 
-.score{
+@media (max-width: 40rem){
+    .score__container{
+        width: 70vw;
+    }
+}
+
+.scores{
 
 }
 

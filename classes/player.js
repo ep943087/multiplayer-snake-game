@@ -30,7 +30,7 @@ class Player{
     }
     startExplosion(){
         this.explosion = [];
-        const count = 15;
+        const count = 2;
         for(let i=0;i<count;i++){
             this.explosion.push(new Explosion(this.i,this.j));
         }
