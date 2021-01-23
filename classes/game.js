@@ -10,7 +10,7 @@ class Game{
         this.rows = 100;
         this.cols = 100;
         this.players = [];
-        this.fruitCount = 125;
+        this.fruitCount = 175;
         this.allTimeHighest = {
             score: 0,
             username: "No one",
