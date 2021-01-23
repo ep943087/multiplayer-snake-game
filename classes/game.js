@@ -10,12 +10,13 @@ class Game{
         this.rows = 100;
         this.cols = 100;
         this.players = [];
+        this.fruitCount = 125;
         this.setFruits();
     }
 
     setFruits(){
         this.fruits = [];
-        for(let i=0;i<50;i++){
+        for(let i=0;i<this.fruitCount;i++){
             this.addFruit();
         }
     }
