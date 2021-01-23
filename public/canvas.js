@@ -38,7 +38,7 @@ const drawPlayer = (player) => {
 
     player.body.forEach(body=>drawBody(body,player.color));
     ctx.fillStyle = player.color;
-    const dif = 4;
+    const dif = 0;
     ctx.fillRect(player.j*pw+dif/2,player.i*pw+dif/2,pw-dif,pw-dif);
     drawEyes(player);
 
@@ -51,7 +51,7 @@ const drawPlayer = (player) => {
 
 const drawBody = (body,color) => {
     ctx.fillStyle = color;
-    const dif = 4;
+    const dif = 0;
     ctx.fillRect(body.j*pw+dif/2,body.i*pw+dif/2,pw-dif,pw-dif);
 }
 

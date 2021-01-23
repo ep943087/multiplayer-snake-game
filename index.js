@@ -105,4 +105,4 @@ setInterval(()=>{
             player.deathMessageSent = true;
         }
     })
-}, 125);
+}, 150);
