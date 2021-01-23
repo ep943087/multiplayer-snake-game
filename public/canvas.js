@@ -17,6 +17,11 @@ const backgroundColor = "#f1f1f1";
 
 let pw = 5;
 
+/******************************
+ * REMINDER!!!!
+ * Draw Everything a square!
+ *****************************/
+
 const drawPlayer = (player) => {
 
     if(!player.playing && pos.playing) return;
@@ -116,7 +121,11 @@ const drawGrid = () => {
 }
 
 const draw = () => {
+
     requestAnimationFrame(draw);
+
+    if(players === null) return;
+    console.log('draw');
     c.width = container.offsetWidth;
     c.height = container.offsetHeight;
 
@@ -129,7 +138,6 @@ const draw = () => {
     else   
         pw = c.height * 5 / rows;
 
-    if(players === null) return;
 
     //pos.i = Math.floor(pos.i/rows*5)*(rows/5) + 10;
     //pos.j = Math.floor(pos.j/cols*5)*(cols/5) + 10;
@@ -187,5 +195,7 @@ const draw = () => {
         }
         ctx.lineWidth = 1;
     }
+
+    players = null;
 
 }
