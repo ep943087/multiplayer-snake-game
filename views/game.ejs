@@ -9,7 +9,19 @@
 <body>
     <h1>Welcome, <%= username %></h1>
     <div class="game__container">
+        <div class="game__death">
+            <h3>You dead, homie</h3>
+            <p>Wanna Keep Playing?</p>
+            <div class="buttons">
+                <button id="play-again">Yes</button>
+                <button id="quit">Hecks Nah</button>
+            </div>
+        </div>
         <canvas class="game__canvas" id="myCanvas"></canvas>
+    </div>
+    <div class="score__container">
+        <ol class="scores">
+        </ol>
     </div>
     <script>
         const username = "<%= username %>";

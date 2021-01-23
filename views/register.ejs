@@ -3,20 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Snake Game</title>
 </head>
 <body>
     <h1>Register</h1>
     <p style="color: red;"><%= error %></p>
     <form method="POST">
         <label>Username</label>
-        <input type="text" name="username">
+        <input id="username" type="text" name="username">
         <label>Color</label>
-        <input id="color" type="color" name="color">
+        <input id="color" value="#0000ff" type="color" name="color">
         <input type="submit" name="submit">
     </form>
     <script>
         document.querySelector('input').focus();
+        const color = document.querySelector('#color');
+        const value = localStorage.getItem('color');
+        if(value !== null){
+            color.value = value;
+        } else{
+            localStorage.setItem('color',color.value);
+        }
+        color.addEventListener('input',(e)=>{
+            const value = color.value;
+            localStorage.setItem('color',value);
+        })
+
+        const username = document.querySelector('#username');
+        const username_value = localStorage.getItem('username');
+        if(username_value !== null){
+            username.value = username_value;
+        } else{
+            localStorage.setItem('username',username.value);
+        }
+        username.addEventListener('input',(e)=>{
+            const value = username.value;
+            localStorage.setItem('username',value);
+        })
+
     </script>
 </body>
 </html>

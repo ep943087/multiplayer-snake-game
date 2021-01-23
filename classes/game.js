@@ -21,22 +21,36 @@ class Game{
     }
 
     moveFruit(fruit){
-        fruit.i = Math.floor(this.rows*Math.random());
-        fruit.j = Math.floor(this.cols*Math.random());
+        const {i,j} = this.getIJ();
+        fruit.i = i;
+        fruit.j = j;
     }
 
     addFruit(){
-        const i = Math.floor(this.rows*Math.random());
-        const j = Math.floor(this.cols*Math.random());
+        const {i,j} = this.getIJ();
         this.fruits.push({
             i,j
         });
     }
-    addUser(id,username,color){
+
+    getIJ(){
         const i = Math.floor(this.rows*Math.random());
         const j = Math.floor(this.cols*Math.random());
+        return {i,j};
+    }
+
+    addUser(id,username,color){
+        const {i,j} = this.getIJ();
         const player = new Player(id,i,j,username,color);
         this.players.push(player);
+    }
+    playAgain(id){
+        const player = this.players.find(player=>player.id === id);
+        if(player === null) return;
+
+        const i = Math.floor(this.rows*Math.random());
+        const j = Math.floor(this.cols*Math.random());
+        player.reset(i,j);
     }
     getPos(id){
         for(let i=0;i<this.players.length;i++){
@@ -45,6 +59,7 @@ class Game{
                 return {
                     i: player.i,
                     j: player.j,
+                    playing: player.playing,
                 }
             }
         }
@@ -52,8 +67,8 @@ class Game{
     }
 
     getPlayers(){
-        return this.players.map(player=>{
-            const {i,j,color,username,dir,body} = player;
+        const players = this.players.map(player=>{
+            const {i,j,color,username,dir,body,dead,playing,explosion} = player;
             return {
                 i,
                 j,
@@ -61,8 +76,16 @@ class Game{
                 username,
                 dir,
                 body,
+                dead,
+                explosion,
+                playing,
             }
         });
+
+        return players.sort((a,b)=>{
+            return b.body.length - a.body.length;
+        });
+        
     }
     changeDir(id,dir){
         const player = this.players.find(player=>{
@@ -70,10 +93,15 @@ class Game{
         });
         if(!player.dead)
             player.dir = dir;
+        if(!player.playing){
+            player.playing = true;
+        }
     }
 
     update(){
         this.players.forEach(player=>{
+            if(player.dead) player.moveExplosions();
+            if(!player.playing || player.dead) return;
             player.move();
             this.collision(player);
         })
@@ -83,12 +111,12 @@ class Game{
         const collide = this.fruits.find(fruit=>{
             return fruit.i === player.i && fruit.j === player.j;
         });
-
         if(collide){
             this.moveFruit(collide);
             player.addBlock();
         }
         const death = this.players.some(other=>{
+            if(other.dead || !other.playing) return;
             if(player !== other){
                 if(player.i === other.i && player.j === other.j)
                     return true;
@@ -99,11 +127,14 @@ class Game{
             });
         })
         if(death){
-            console.log('death');
+            player.dead = true;
         } else{
             if(player.i < 0 || player.i === this.rows || player.j < 0 || player.j === this.cols){
-                console.log('death');
+                player.dead = true;
             }
+        }
+        if(player.dead){
+            player.startExplosion();
         }
     }
 

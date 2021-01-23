@@ -73,17 +73,17 @@ io.on('connection',(socket)=>{
     socket.on('right',()=>{
         game.changeDir(socket.id,RIGHT);
     })
-
     socket.on('disconnect',()=>{
         game.removePlayer(socket.id);
         console.log('Players: ' + game.players.length);
     })
+    socket.on('play-again',()=>{
+        game.playAgain(socket.id);
+    })
 })
 
 setInterval(()=>{
-
     game.update();
-
     const players = game.getPlayers();
     const {rows,cols,fruits} = game;
     game.players.forEach(player=>{
@@ -96,5 +96,9 @@ setInterval(()=>{
             fruits,
         }
         io.to(player.id).emit('update',gameLogic);
+        if(player.dead && !player.deathMessageSent){
+            io.to(player.id).emit('death');
+            player.deathMessageSent = true;
+        }
     })
 }, 125);

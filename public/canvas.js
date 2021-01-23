@@ -18,11 +18,35 @@ const backgroundColor = "#f1f1f1";
 let pw = 5;
 
 const drawPlayer = (player) => {
+
+    if(!player.playing && pos.playing) return;
+
+    ctx.fillStyle = player.color;
+
+    if(player.dead){
+        player.explosion.forEach(exp=>{
+            ctx.globalAlpha = (5-exp.dist) / 5;
+            ctx.beginPath();
+            ctx.arc(exp.j*pw+pw/2,exp.i*pw+pw/2,3,0,2*Math.PI);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        return;
+    }
+
+
+
+    player.body.forEach(body=>drawBody(body,player.color));
     ctx.fillStyle = player.color;
     const dif = 4;
     ctx.fillRect(player.j*pw+dif/2,player.i*pw+dif/2,pw-dif,pw-dif);
     drawEyes(player);
-    player.body.forEach(body=>drawBody(body,player.color));
+
+    ctx.font = "15px Monospace";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.fillText(player.username,player.j*pw+pw/2,player.i*pw+pw/2-pw);
+
 }
 
 const drawBody = (body,color) => {
@@ -34,7 +58,7 @@ const drawBody = (body,color) => {
 const drawFruit = (fruit) => {
     ctx.fillStyle = "red";
     ctx.beginPath();
-    ctx.arc(fruit.j*pw+pw/2,fruit.i*pw+pw/2,pw/2,0,2*Math.PI);
+    ctx.arc(fruit.j*pw+pw/2,fruit.i*pw+pw/2,pw*.4,0,2*Math.PI);
     ctx.fill();
 }
 
@@ -87,6 +111,8 @@ const drawGrid = () => {
             ctx.strokeRect(x,y,pw,pw);
         }
     }
+    ctx.strokeStyle = "black";
+    ctx.strokeRect(0,0,pw*rows,pw*cols);
 }
 
 const draw = () => {
@@ -102,9 +128,8 @@ const draw = () => {
 
     if(players === null) return;
 
-
-    pos.i = Math.floor(pos.i/rows*5)*(rows/5) + 10-2;
-    pos.j = Math.floor(pos.j/cols*5)*(cols/5) + 10-2;
+    //pos.i = Math.floor(pos.i/rows*5)*(rows/5) + 10;
+    //pos.j = Math.floor(pos.j/cols*5)*(cols/5) + 10;
 
     const {i,j} = pos;
 
@@ -124,4 +149,13 @@ const draw = () => {
     players.forEach((player)=>drawPlayer(player));
 
     ctx.restore();
+
+    if(!pos.playing){
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = "20px Monospace";
+        ctx.fillText('Press arrow keys or A,W,D,S to start',c.width/2,c.height*.2);
+    }
+
 }

@@ -4,24 +4,61 @@ const RIGHT = 2;
 const DOWN = 3;
 const LEFT = 4;
 
+class Explosion{
+    constructor(i,j){
+        this.vel = .3;
+        this.i = i;
+        this.j = j;
+        this.dist = 0;
+        const angle = 2*Math.PI*Math.random();
+        this.xVel = this.vel*Math.cos(angle);
+        this.yVel = this.vel*Math.sin(angle);
+    }
+    move(){
+        this.i += this.yVel;
+        this.j += this.xVel;
+        this.dist++;
+    }
+}
+
 class Player{
     constructor(id,i,j,username,color){
         this.id = id;
-        this.i = i;
-        this.j = j;
         this.username = username;
         this.color = color;
-        this.dir = UP;
-        this.dead = false;
-        this.playing = false;
+        this.reset(i,j);
+    }
+    startExplosion(){
+        this.explosion = [];
+        const count = 15;
+        for(let i=0;i<count;i++){
+            this.explosion.push(new Explosion(this.i,this.j));
+        }
+        this.body.forEach(body=>{
+            for(let i=0;i<count;i++){
+                this.explosion.push(new Explosion(body.i,body.j));
+            }
+        });
         this.body = [];
+    }
+    moveExplosions(){
+        this.explosion.forEach(exp=>exp.move());
+        if(this.explosion.length > 0 && this.explosion[0].dist > 5){
+            this.explosion = [];
+        }
     }
     reset(i,j){
         this.i = i;
         this.j = j;
         this.dir = UP;
+        this.deathMessageSent = false;
+        this.dead = false;
+        this.playing = false;
+        this.body = [];
+        this.explosion = [];
     }
     move(){
+        if(this.dead) return;
         for(let i=this.body.length-1;i>=0;i--){
             const body = this.body[i];
             if(i === 0){
@@ -43,14 +80,21 @@ class Player{
 
     addBlock(){
         if(this.body.length === 0){
-            this.addBlockDir(this.dir);
+            this.addBlockDir(this.i,this.j,this.dir);
         } else{
             const tail = this.body[this.body.length-1];
-            this.addBlockDir(tail.dir);
+            const next = this.body.length > 1? this.body[this.body.length-2] : this;
+            let i = next.i - tail.i;
+            let j = next.j - tail.j;
+            let dir;
+            if(j < 0) dir = LEFT;
+            else if(j > 0) dir = RIGHT;
+            else if(i < 0) dir = UP;
+            else if(i > 0) dir = DOWN;
+            this.addBlockDir(tail.i,tail.j,dir);
         }
     }
-    addBlockDir(dir){
-        let {i,j} = this;
+    addBlockDir(i,j,dir){
         switch(dir){
             case UP:
                 i++;
