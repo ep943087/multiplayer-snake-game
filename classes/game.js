@@ -10,12 +10,19 @@ class Game{
         this.rows = 100;
         this.cols = 100;
         this.players = [];
-        this.fruitCount = 175;
+        this.fruitCount = 250;
+        this.messages = [];
         this.allTimeHighest = {
             score: 0,
             username: "No one",
         }
         this.setFruits();
+    }
+    addMessage(msg){
+        this.messages.push(msg);
+        if(this.messages.length > 5){
+            this.messages.shift();
+        }
     }
 
     setFruits(){
@@ -144,12 +151,22 @@ class Game{
         const death = this.players.some(other=>{
             if(other.dead || !other.playing) return;
             if(player !== other){
-                if(player.i === other.i && player.j === other.j)
+                if(player.i === other.i && player.j === other.j){
+                    player.deathMessage = `${player.username} killed by ${other.username}`;
                     return true;
+                }
             }
             const body = other.body;
             return body.some(block=>{
-                return player.i === block.i && player.j === block.j;
+                const death = player.i === block.i && player.j === block.j;
+                if(death){
+                    if(player === other){
+                        player.deathMessage = `${player.username} killed themself, LOL`;
+                    } else{
+                        player.deathMessage = `${player.username} killed by ${other.username}`;
+                    }
+                }
+                return death;
             });
         })
         if(death){
@@ -157,17 +174,23 @@ class Game{
         } else{
             if(player.i < 0 || player.i === this.rows || player.j < 0 || player.j === this.cols){
                 player.dead = true;
+                player.deathMessage = `${player.username} went out of bounds, LOL`;
             }
         }
         if(player.dead){
+            this.addMessage(player.deathMessage);
             player.startExplosion();
         }
     }
 
     removePlayer(id){
+        let name = "";
         this.players = this.players.filter(player=>{
-            return player.id !== id;
+            const notPlayer = player.id !== id;
+            if(!notPlayer) name = player.username;
+            return notPlayer;
         });
+        return name;
     }
 }
 

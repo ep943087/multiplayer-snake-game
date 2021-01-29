@@ -57,7 +57,7 @@ io.on('connection',(socket)=>{
     socket.on('join',({username,color})=>{
         game.addUser(socket.id,username,color);
         console.log('Players: ' + game.players.length);
-
+        game.addMessage(`${username} has joined`);
         socket.emit('joined');
     });
 
@@ -78,8 +78,9 @@ io.on('connection',(socket)=>{
         game.changeAngle(socket.id,angle);
     })
     socket.on('disconnect',()=>{
-        game.removePlayer(socket.id);
+        const name = game.removePlayer(socket.id);
         console.log('Players: ' + game.players.length);
+        game.addMessage(`${name} left the game`);
     })
     socket.on('play-again',()=>{
         game.playAgain(socket.id);
@@ -89,7 +90,7 @@ io.on('connection',(socket)=>{
 setInterval(()=>{
     game.update();
     const players = game.getPlayers();
-    const {rows,cols,fruits} = game;
+    const {rows,cols,fruits,messages} = game;
     game.players.forEach(player=>{
         const pos = game.getPos(player.id);
         const gameLogic = {
@@ -98,10 +99,14 @@ setInterval(()=>{
             rows,
             cols,
             fruits,
+            messages,
         }
         io.to(player.id).emit('update',gameLogic);
         if(player.dead && !player.deathMessageSent){
-            io.to(player.id).emit('death');
+            io.to(player.id).emit('death',{
+                score: player.score_before_death,
+                msg: player.deathMessage,
+            });
             player.deathMessageSent = true;
         }
     })

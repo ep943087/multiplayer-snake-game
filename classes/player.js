@@ -26,9 +26,11 @@ class Player{
         this.id = id;
         this.username = username;
         this.color = color;
+        this.score_before_death = 0;
         this.reset(i,j);
     }
     startExplosion(){
+        this.score_before_death = this.body.length;
         this.explosion = [];
         const count = 2;
         for(let i=0;i<count;i++){
@@ -48,6 +50,7 @@ class Player{
         }
     }
     reset(i,j){
+        this.deathMessage = "";
         this.i = i;
         this.j = j;
         this.dir = UP;

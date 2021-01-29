@@ -3,7 +3,7 @@ let pos = null;
 let rows = null;
 let cols = null;
 let fruits = null;
-
+let messages = null;
 const UP = 1;
 const RIGHT = 2;
 const DOWN = 3;
@@ -13,7 +13,9 @@ const container = document.querySelector('.game__container');
 const c = document.querySelector('.game__canvas');
 const ctx = c.getContext('2d');
 
-const backgroundColor = "#f1f1f1";
+const style = getComputedStyle(document.body);
+
+const backgroundColor = style.getPropertyValue('--darkest');
 
 let pw = 5;
 
@@ -21,6 +23,7 @@ let pw = 5;
  * REMINDER!!!!
  * Draw Everything a square!
  *****************************/
+
 
 const drawPlayer = (player) => {
 
@@ -31,9 +34,11 @@ const drawPlayer = (player) => {
     if(player.dead){
         player.explosion.forEach(exp=>{
             ctx.globalAlpha = (5-exp.dist) / 5;
-            ctx.beginPath();
-            ctx.arc(exp.j*pw+pw/2,exp.i*pw+pw/2,3,0,2*Math.PI);
-            ctx.fill();
+            // ctx.beginPath();
+            // ctx.arc(exp.j*pw+pw/2,exp.i*pw+pw/2,3,0,2*Math.PI);
+            // ctx.fill();
+            const dif = pw*.40;
+            ctx.fillRect(exp.j*pw+dif/2,exp.i*pw+dif/2,pw-dif,pw-dif);
         });
         ctx.globalAlpha = 1;
         return;
@@ -48,7 +53,7 @@ const drawPlayer = (player) => {
     drawEyes(player);
 
     ctx.font = "15px Monospace";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.fillText(player.username,player.j*pw+pw/2,player.i*pw+pw/2-pw);
 
@@ -62,9 +67,11 @@ const drawBody = (body,color) => {
 
 const drawFruit = (fruit) => {
     ctx.fillStyle = "red";
-    ctx.beginPath();
-    ctx.arc(fruit.j*pw+pw/2,fruit.i*pw+pw/2,pw*.4,0,2*Math.PI);
-    ctx.fill();
+    const dif = 10;
+    ctx.fillRect(fruit.j*pw+dif/2,fruit.i*pw+dif/2,pw-dif,pw-dif);
+    //    ctx.beginPath();
+//    ctx.arc(fruit.j*pw+pw/2,fruit.i*pw+pw/2,pw*.4,0,2*Math.PI);
+//    ctx.fill();
 }
 
 const drawEyes = player => {
@@ -108,16 +115,36 @@ const drawEyes = player => {
 }
 
 const drawGrid = () => {
+    ctx.lineWidth = .25;
+    ctx.globalAlpha = .5;
     for(let i=0;i<rows;i++){
         for(let j=0;j<cols;j++){
             const x = pw*j;
             const y = pw*i;
-            ctx.strokeStyle = "rgba(0,0,0,.1)";
+            ctx.strokeStyle = style.getPropertyValue('--lighest');
             ctx.strokeRect(x,y,pw,pw);
         }
     }
-    ctx.strokeStyle = "black";
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = style.getPropertyValue('--darker');
     ctx.strokeRect(0,0,pw*rows,pw*cols);
+}
+
+const drawMessages = ()=>{
+    if(messages === null) return;
+    messages = messages.reverse();
+    ctx.fillStyle = style.getPropertyValue('--dark');
+    ctx.fillStyle = "white";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.font = "17px Monospace";
+    const [x,y] =[15, c.height - 25*5];
+    for(let i=0;i<messages.length;i++){
+        ctx.globalAlpha = (5-i)/5;
+        ctx.fillText(messages[i],x,y+25*i);
+    }
+    ctx.globalAlpha = 1;
 }
 
 const draw = () => {
@@ -125,7 +152,6 @@ const draw = () => {
     requestAnimationFrame(draw);
 
     if(players === null) return;
-    console.log('draw');
     c.width = container.offsetWidth;
     c.height = container.offsetHeight;
 
@@ -162,7 +188,7 @@ const draw = () => {
     ctx.restore();
 
     if(!pos.playing){
-        ctx.fillStyle = "black";
+        ctx.fillStyle = style.getPropertyValue('--dark');
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.font = "20px Monospace";
@@ -176,7 +202,7 @@ const draw = () => {
         const dy = .75*len*Math.sin(angle);
         
         ctx.beginPath();
-        ctx.strokeStyle = "rgba(0,0,0,.75)";
+        ctx.strokeStyle = style.getPropertyValue('--dark');
         ctx.lineWidth = 5;
         ctx.moveTo(oM.x,oM.y);
         ctx.lineTo(oM.x + dx,oM.y + dy);
@@ -195,7 +221,10 @@ const draw = () => {
         }
         ctx.lineWidth = 1;
     }
+    drawMessages();
 
     players = null;
+
+
 
 }
