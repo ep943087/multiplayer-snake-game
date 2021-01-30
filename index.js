@@ -90,7 +90,7 @@ io.on('connection',(socket)=>{
 setInterval(()=>{
     game.update();
     const players = game.getPlayers();
-    const {rows,cols,fruits,messages} = game;
+    const {rows,cols,fruits,messages,highscore,highscore_name} = game;
     game.players.forEach(player=>{
         const pos = game.getPos(player.id);
         const gameLogic = {
@@ -100,6 +100,8 @@ setInterval(()=>{
             cols,
             fruits,
             messages,
+            highscore,
+            highscore_name,
         }
         io.to(player.id).emit('update',gameLogic);
         if(player.dead && !player.deathMessageSent){

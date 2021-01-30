@@ -1,5 +1,6 @@
 const Player = require("./player");
-
+const fs = require('fs');
+const { kMaxLength } = require("buffer");
 const UP = 1;
 const RIGHT = 2;
 const DOWN = 3;
@@ -7,16 +8,33 @@ const LEFT = 4;
 
 class Game{
     constructor(){
-        this.rows = 100;
-        this.cols = 100;
+        this.rows = 75;
+        this.cols = 75;
         this.players = [];
-        this.fruitCount = 250;
+        this.fruitCount = 350;
         this.messages = [];
         this.allTimeHighest = {
             score: 0,
             username: "No one",
         }
         this.setFruits();
+        this.setHighScore();
+    }
+    setHighScore(){
+        const data = fs.readFileSync('./score/highscore.json','utf8');
+        const {highscore,highscore_name} = JSON.parse(data);
+        this.highscore = highscore;
+        this.highscore_name = highscore_name;
+    }
+    updateHighScore(score,name){
+        this.highscore = score;
+        this.highscore_name = name;
+        const data = fs.readFileSync('./score/highscore.json','utf8');
+        const obj = JSON.parse(data);
+        obj.highscore = score;
+        obj.highscore_name = name;
+        const strObj = JSON.stringify(obj);
+        fs.writeFileSync('./score/highscore.json',strObj);
     }
     addMessage(msg){
         this.messages.push(msg);
@@ -150,6 +168,14 @@ class Game{
         if(collide){
             this.moveFruit(collide);
             player.addBlock();
+            if(player.body.length > this.highscore){
+                this.updateHighScore(player.body.length, player.username);
+                if(!player.newHighScore){
+                    const message = `NEW HIGHSCORE by ${player.username}!`;
+                    this.messages.push(message);
+                }
+                player.newHighScore = true;
+            }
         }
         const death = this.players.some(other=>{
             if(other.dead || !other.playing) return;
@@ -182,6 +208,11 @@ class Game{
         }
         if(player.dead){
             this.addMessage(player.deathMessage);
+            if(player.newHighScore){
+                player.deathMessage = "NEW HIGH SCORE!";
+            } else{
+                player.deathMessage = "";
+            }
             player.startExplosion();
         }
     }

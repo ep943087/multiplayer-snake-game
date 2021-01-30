@@ -161,9 +161,9 @@ const draw = () => {
     ctx.fillRect(0,0,c.width,c.height);
     
     if(c.width < c.height)
-        pw = c.width * 4 / cols;
+        pw = c.width * 3 / cols;
     else   
-        pw = c.height * 4 / rows;
+        pw = c.height * 3 / rows;
 
 
     //pos.i = Math.floor(pos.i/rows*5)*(rows/5) + 10;

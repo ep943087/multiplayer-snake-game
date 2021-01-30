@@ -32,6 +32,7 @@ class Player{
     startExplosion(){
         this.score_before_death = this.body.length;
         this.explosion = [];
+        this.newHighScore = false;
         const count = 2;
         for(let i=0;i<count;i++){
             this.explosion.push(new Explosion(this.i,this.j));

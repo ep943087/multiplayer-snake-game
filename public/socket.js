@@ -22,6 +22,9 @@ socket.on('connect',()=>{
         cols = gameLogic.cols;
         fruits = gameLogic.fruits;
         messages = gameLogic.messages;
+        const highscore = gameLogic.highscore;
+        const highscore_name = gameLogic.highscore_name;
+        document.querySelector('.highscore').innerHTML = `${highscore_name}: ${highscore}`;
         scores.innerHTML = "";
         players.forEach(player=>{
             let style="";
@@ -35,7 +38,7 @@ socket.on('connect',()=>{
     })
     socket.on('death',({score,msg})=>{
         document.querySelector('.final-score').innerHTML = score;
-        console.log(msg);
+        document.querySelector('.death-message').innerHTML = msg;
         gameOverMenu.classList.add('show');
     });
 })
