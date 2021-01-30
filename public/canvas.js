@@ -55,7 +55,8 @@ const drawPlayer = (player) => {
     ctx.font = "15px Monospace";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
-    ctx.fillText(player.username,player.j*pw+pw/2,player.i*pw+pw/2-pw);
+    const y = player.dir === DOWN? 1.5*pw : -pw;
+    ctx.fillText(player.username,player.j*pw+pw/2,player.i*pw+pw/2+y);
 
 }
 
@@ -115,8 +116,8 @@ const drawEyes = player => {
 }
 
 const drawGrid = () => {
-    ctx.lineWidth = .25;
-    ctx.globalAlpha = .5;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = .25;
     for(let i=0;i<rows;i++){
         for(let j=0;j<cols;j++){
             const x = pw*j;
@@ -160,9 +161,9 @@ const draw = () => {
     ctx.fillRect(0,0,c.width,c.height);
     
     if(c.width < c.height)
-        pw = c.width * 5 / cols;
+        pw = c.width * 4 / cols;
     else   
-        pw = c.height * 5 / rows;
+        pw = c.height * 4 / rows;
 
 
     //pos.i = Math.floor(pos.i/rows*5)*(rows/5) + 10;
@@ -195,6 +196,8 @@ const draw = () => {
         ctx.fillText('Press arrow keys or A,W,D,S to start',c.width/2,c.height*.2);
     }
 
+    drawMessages();
+
     if(oM !== undefined && m !== undefined){
         const angle = Math.atan2(m.y-oM.y,m.x-oM.x);
         const len = 75;
@@ -213,15 +216,15 @@ const draw = () => {
             const dy = .5*len*Math.sin(a);
             
             ctx.beginPath();
-            ctx.strokeStyle = "rgba(0,0,0,.3)";
+            ctx.globalAlpha = .3;
             ctx.lineWidth = 5;
             ctx.moveTo(oM.x,oM.y);
             ctx.lineTo(oM.x + dx,oM.y + dy);
             ctx.stroke();
+            ctx.globalAlpha = 1;
         }
         ctx.lineWidth = 1;
     }
-    drawMessages();
 
     players = null;
 

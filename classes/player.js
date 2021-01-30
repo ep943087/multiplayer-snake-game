@@ -54,11 +54,20 @@ class Player{
         this.i = i;
         this.j = j;
         this.dir = UP;
+        this.lastDir = this.dir;
         this.deathMessageSent = false;
         this.dead = false;
         this.playing = false;
         this.body = [];
         this.explosion = [];
+    }
+    canChangeDir(dir){
+        if(!this.playing || this.body.length === 0)
+            return true;
+        return this.lastDir === RIGHT && dir !== LEFT ||
+                this.lastDir === LEFT && dir !== RIGHT || 
+                this.lastDir === UP && dir !== DOWN ||
+                this.lastDir === DOWN && dir !== UP;
     }
     move(){
         if(this.dead) return;
@@ -79,6 +88,7 @@ class Player{
             case RIGHT: this.j++; break;
             case LEFT: this.j--; break;
         }
+        this.lastDir = this.dir;
     }
 
     addBlock(){

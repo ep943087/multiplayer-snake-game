@@ -72,6 +72,7 @@ class Game{
                     i: player.i,
                     j: player.j,
                     playing: player.playing,
+                    dir: player.dir,
                 }
             }
         }
@@ -106,8 +107,10 @@ class Game{
     }
     changeDir(id,dir){
         const player = this.findPlayer(id);
-        if(!player.dead)
-            player.dir = dir;
+        if(!player.dead){
+            if(player.canChangeDir(dir))
+                player.dir = dir;
+        }
         if(!player.playing){
             player.playing = true;
         }
@@ -116,16 +119,16 @@ class Game{
     changeAngle(id,angle){
         const player = this.findPlayer(id);
         player.playing = true;
-        if(angle>=-3*Math.PI/4&&angle<=-Math.PI/4){
+        if(angle>=-3*Math.PI/4&&angle<=-Math.PI/4 && player.canChangeDir(UP)){
             player.dir = UP;
         //pm = "up";
-        } else if(angle>=Math.PI/4&&angle<=3*Math.PI/4){
+        } else if(angle>=Math.PI/4&&angle<=3*Math.PI/4 && player.canChangeDir(DOWN)){
             player.dir = DOWN;
         //pm = "down";
-        } else if(angle>=-Math.PI/4&&angle<=Math.PI/4){
+        } else if(angle>=-Math.PI/4&&angle<=Math.PI/4 && player.canChangeDir(RIGHT)){
             player.dir = RIGHT;
         //pm = "right";
-        } else if((angle>=3*Math.PI/4&&angle<=Math.PI)||(angle<=-3*Math.PI/4&&angle>=-Math.PI)){
+        } else if(((angle>=3*Math.PI/4&&angle<=Math.PI)||(angle<=-3*Math.PI/4&&angle>=-Math.PI))&&player.canChangeDir(LEFT)){
             player.dir = LEFT;
         //pm = "left";
         }
@@ -161,7 +164,7 @@ class Game{
                 const death = player.i === block.i && player.j === block.j;
                 if(death){
                     if(player === other){
-                        player.deathMessage = `${player.username} killed themself, LOL`;
+                        player.deathMessage = `${player.username} killed thyself, LOL`;
                     } else{
                         player.deathMessage = `${player.username} killed by ${other.username}`;
                     }
