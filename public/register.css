@@ -1,0 +1,37 @@
+
+html,body{
+    height: 100%;
+}
+body{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.register{
+    animation: come-in 1s;
+}
+
+.register input[type="submit"]{
+    border: 1px solid var(--dark);
+    color: var(--dark);
+    background-color: var(--darkest);
+    padding: 5px;
+}
+
+.register input[type="submit"]:hover{
+    color: var(--darkest);
+    background-color: var(--dark);
+    cursor: pointer;
+}
+
+@keyframes come-in{
+    from{
+        transform: translateY(-200px) ;
+        opacity: 0;
+    }
+    to{
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

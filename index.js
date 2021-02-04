@@ -55,6 +55,7 @@ io.on('connection',(socket)=>{
     console.log('new connection!');
 
     socket.on('join',({username,color})=>{
+        game.setHighScore();
         game.addUser(socket.id,username,color);
         console.log('Players: ' + game.players.length);
         game.addMessage(`${username} has joined`);

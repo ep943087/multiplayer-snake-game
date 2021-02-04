@@ -5,18 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="register.css">
 
 </head>
 <body>
-    <h1>Register</h1>
-    <p style="color: red;"><%= error %></p>
-    <form method="POST">
-        <label>Username</label>
-        <input id="username" type="text" name="username">
-        <label>Color</label>
-        <input id="color" value="#0000ff" type="color" name="color">
-        <input type="submit" name="submit">
-    </form>
+    <div class="register">
+        <h1>Register</h1>
+        <p style="color: red;"><%= error %></p>
+        <form method="POST">
+            <label>Username</label>
+            <input id="username" type="text" name="username">
+            <br>
+
+            <label>Color</label>
+            <input id="color" value="#0000ff" type="color" name="color">
+            <br>
+
+            <input type="submit" name="submit">
+        </form>
+    </div>
     <script>
         document.querySelector('input').focus();
         const color = document.querySelector('#color');
