@@ -182,6 +182,9 @@ class Game{
             if(player !== other){
                 if(player.i === other.i && player.j === other.j){
                     player.deathMessage = `${player.username} killed by ${other.username}`;
+                    for(let i=0;i<player.body.length;i++){
+                        other.addBlock();
+                    }
                     return true;
                 }
             }

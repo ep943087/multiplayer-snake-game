@@ -134,16 +134,16 @@ const drawGrid = () => {
 
 const drawMessages = ()=>{
     if(messages === null) return;
-    messages = messages.reverse();
+    msg = messages.slice().reverse();
     ctx.fillStyle = style.getPropertyValue('--dark');
     ctx.fillStyle = "white";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
     ctx.font = "17px Monospace";
     const [x,y] =[15, c.height - 25*5];
-    for(let i=0;i<messages.length;i++){
+    for(let i=0;i<msg.length;i++){
         ctx.globalAlpha = (5-i)/5;
-        ctx.fillText(messages[i],x,y+25*i);
+        ctx.fillText(msg[i],x,y+25*i);
     }
     ctx.globalAlpha = 1;
 }
@@ -226,8 +226,6 @@ const draw = () => {
         ctx.lineWidth = 1;
     }
 
-    players = null;
-
-
+    // players = null;
 
 }
