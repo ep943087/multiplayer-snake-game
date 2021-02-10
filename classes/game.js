@@ -195,6 +195,9 @@ class Game{
                     if(player === other){
                         player.deathMessage = `${player.username} killed thyself, LOL`;
                     } else{
+                        for(let i=0;i<player.body.length;i++){
+                            other.addBlock();
+                        }
                         player.deathMessage = `${player.username} killed by ${other.username}`;
                     }
                 }
