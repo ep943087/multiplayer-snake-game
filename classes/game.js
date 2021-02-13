@@ -17,7 +17,7 @@ class Game{
         // number of fruits in game
         this.fruitCount = 80;
         this.poisonCount = 12;
-        this.poisonSize = 4;
+        this.poisonSize = 3;
 
         this.messages = [];
         
@@ -227,7 +227,7 @@ class Game{
                     }
                     break;
                 case RIGHT:
-                    poison.j++
+                    poison.j++;
                     if(poison.j >= this.cols-1){
                         poison.j = this.cols-1;
                         poison.direction = LEFT;
