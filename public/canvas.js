@@ -1,3 +1,6 @@
+// drawing logic
+
+// initialize global variables
 let players = null;
 let pos = null;
 let rows = null;
@@ -25,6 +28,8 @@ let pw = 5;
  *****************************/
 
 
+// draw player, if not dead, draw each body part, else draw exploding
+// pieces
 const drawPlayer = (player) => {
 
     if(!player.playing && pos.playing) return;
@@ -44,14 +49,13 @@ const drawPlayer = (player) => {
         return;
     }
 
-
-
     player.body.forEach(body=>drawBody(body,player.color));
     ctx.fillStyle = player.color;
     const dif = 0;
     ctx.fillRect(player.j*pw+dif/2,player.i*pw+dif/2,pw-dif,pw-dif);
     drawEyes(player);
 
+    // draw username
     ctx.font = "15px Monospace";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
@@ -60,21 +64,21 @@ const drawPlayer = (player) => {
 
 }
 
+// draw each square of user
 const drawBody = (body,color) => {
     ctx.fillStyle = color;
     const dif = 0;
     ctx.fillRect(body.j*pw+dif/2,body.i*pw+dif/2,pw-dif,pw-dif);
 }
 
+// draw each fruit 
 const drawFruit = (fruit) => {
     ctx.fillStyle = "red";
     const dif = 10;
     ctx.fillRect(fruit.j*pw+dif/2,fruit.i*pw+dif/2,pw-dif,pw-dif);
-    //    ctx.beginPath();
-//    ctx.arc(fruit.j*pw+pw/2,fruit.i*pw+pw/2,pw*.4,0,2*Math.PI);
-//    ctx.fill();
 }
 
+// draw eyes of player on their head
 const drawEyes = player => {
     ctx.fillStyle = "white";
     let ex1,ex2,ey1,ey2;
@@ -115,6 +119,7 @@ const drawEyes = player => {
     ctx.fill();
 }
 
+// draw line grid of game
 const drawGrid = () => {
     ctx.lineWidth = 1;
     ctx.globalAlpha = .25;
@@ -132,6 +137,7 @@ const drawGrid = () => {
     ctx.strokeRect(0,0,pw*rows,pw*cols);
 }
 
+// draw messages by server on the lower left of the screen
 const drawMessages = ()=>{
     if(messages === null) return;
     msg = messages.slice().reverse();
@@ -148,6 +154,7 @@ const drawMessages = ()=>{
     ctx.globalAlpha = 1;
 }
 
+// call draw functions in an interval
 const draw = () => {
 
     requestAnimationFrame(draw);
@@ -160,6 +167,7 @@ const draw = () => {
     ctx.clearRect(0,0,c.width,c.height);
     ctx.fillRect(0,0,c.width,c.height);
     
+    // calculate width/height of the cells on grid
     if(c.width < c.height)
         pw = c.width * 3 / cols;
     else   
@@ -188,6 +196,7 @@ const draw = () => {
 
     ctx.restore();
 
+    // if not playing, then show this message
     if(!pos.playing){
         ctx.fillStyle = style.getPropertyValue('--dark');
         ctx.textAlign = "center";
@@ -198,6 +207,8 @@ const draw = () => {
 
     drawMessages();
 
+    // logic for someone playing on their phone, draws line between
+    // finger and original position
     if(oM !== undefined && m !== undefined){
         const angle = Math.atan2(m.y-oM.y,m.x-oM.x);
         const len = 75;
@@ -225,7 +236,5 @@ const draw = () => {
         }
         ctx.lineWidth = 1;
     }
-
-    // players = null;
 
 }

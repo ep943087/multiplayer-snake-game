@@ -1,6 +1,7 @@
 const Player = require("./player");
 const fs = require('fs');
-const { kMaxLength } = require("buffer");
+
+// constants
 const UP = 1;
 const RIGHT = 2;
 const DOWN = 3;
@@ -8,11 +9,15 @@ const LEFT = 4;
 
 class Game{
     constructor(){
-        this.rows = 75;
-        this.cols = 75;
+        // how many rows and columns in grid
+        this.rows = 65;
+        this.cols = 65;
         this.players = [];
-        this.fruitCount = 350;
+
+        // number of fruits in game
+        this.fruitCount = 150;
         this.messages = [];
+        
         this.allTimeHighest = {
             score: 0,
             username: "No one",
@@ -21,22 +26,34 @@ class Game{
         this.setHighScore();
     }
     setHighScore(){
-        const data = fs.readFileSync('./score/highscore.json','utf8');
-        const {highscore,highscore_name} = JSON.parse(data);
-        this.highscore = highscore;
-        this.highscore_name = highscore_name;
+        // open file and set high score
+        try{
+            const data = fs.readFileSync('./score/highscore.json','utf8');
+            const {highscore,highscore_name} = JSON.parse(data);
+            this.highscore = highscore;
+            this.highscore_name = highscore_name;
+        } catch(e){
+
+        }
+
     }
     updateHighScore(score,name){
-        this.highscore = score;
-        this.highscore_name = name;
-        const data = fs.readFileSync('./score/highscore.json','utf8');
-        const obj = JSON.parse(data);
-        obj.highscore = score;
-        obj.highscore_name = name;
-        const strObj = JSON.stringify(obj);
-        fs.writeFileSync('./score/highscore.json',strObj);
+        // this file updates file with new high score.
+        try{
+            this.highscore = score;
+            this.highscore_name = name;
+            const data = fs.readFileSync('./score/highscore.json','utf8');
+            const obj = JSON.parse(data);
+            obj.highscore = score;
+            obj.highscore_name = name;
+            const strObj = JSON.stringify(obj);
+            fs.writeFileSync('./score/highscore.json',strObj);
+        } catch(e){
+
+        }
     }
     addMessage(msg){
+        // pushes a new message in array of messages
         this.messages.push(msg);
         if(this.messages.length > 5){
             this.messages.shift();
@@ -44,6 +61,7 @@ class Game{
     }
 
     setFruits(){
+        // add fruits to fruit array based on fruit count
         this.fruits = [];
         for(let i=0;i<this.fruitCount;i++){
             this.addFruit();
@@ -51,12 +69,14 @@ class Game{
     }
 
     moveFruit(fruit){
+        // move fruit to new position on grid
         const {i,j} = this.getIJ();
         fruit.i = i;
         fruit.j = j;
     }
 
     addFruit(){
+        // add fruit to array of fruits
         const {i,j} = this.getIJ();
         this.fruits.push({
             i,j
@@ -64,17 +84,20 @@ class Game{
     }
 
     getIJ(){
+        // initialize row and column to random values in grid
         const i = Math.floor(this.rows*Math.random());
         const j = Math.floor(this.cols*Math.random());
         return {i,j};
     }
 
     addUser(id,username,color){
+        // add user to array of players
         const {i,j} = this.getIJ();
         const player = new Player(id,i,j,username,color);
         this.players.push(player);
     }
     playAgain(id){
+        // reset player information so they can play again
         const player = this.players.find(player=>player.id === id);
         if(player === null) return;
 
@@ -83,6 +106,7 @@ class Game{
         player.reset(i,j);
     }
     getPos(id){
+        // get position of user with same socket id
         for(let i=0;i<this.players.length;i++){
             if(this.players[i].id === id){
                 const player = this.players[i];
@@ -98,6 +122,7 @@ class Game{
     }
 
     getPlayers(){
+        // returns array of players without socket ids for protection
         const players = this.players.map(player=>{
             const {i,j,color,username,dir,body,dead,playing,explosion} = player;
             return {
@@ -112,18 +137,20 @@ class Game{
                 playing,
             }
         });
-
+        // sort by who has highest score
         return players.sort((a,b)=>{
             return b.body.length - a.body.length;
         });
         
     }
     findPlayer(id){
+        // find player with same socket id
         return this.players.find(player=>{
             return id === player.id;
         });
     }
     changeDir(id,dir){
+        // find player, then change directions
         const player = this.findPlayer(id);
         if(!player.dead){
             if(player.canChangeDir(dir))
@@ -135,24 +162,22 @@ class Game{
     }
 
     changeAngle(id,angle){
+        // find player, then change direction based on angle
         const player = this.findPlayer(id);
         player.playing = true;
         if(angle>=-3*Math.PI/4&&angle<=-Math.PI/4 && player.canChangeDir(UP)){
             player.dir = UP;
-        //pm = "up";
         } else if(angle>=Math.PI/4&&angle<=3*Math.PI/4 && player.canChangeDir(DOWN)){
             player.dir = DOWN;
-        //pm = "down";
         } else if(angle>=-Math.PI/4&&angle<=Math.PI/4 && player.canChangeDir(RIGHT)){
             player.dir = RIGHT;
-        //pm = "right";
         } else if(((angle>=3*Math.PI/4&&angle<=Math.PI)||(angle<=-3*Math.PI/4&&angle>=-Math.PI))&&player.canChangeDir(LEFT)){
             player.dir = LEFT;
-        //pm = "left";
         }
     }
 
     update(){
+        // this function updates game logic, move players and explosions, also collision logic
         this.players.forEach(player=>{
             if(player.dead) player.moveExplosions();
             if(!player.playing || player.dead) return;
@@ -162,12 +187,16 @@ class Game{
     }
 
     collision(player){
+        // check collision logic
+
+        // if ate a fruit, then move fruit and add to body
         const collide = this.fruits.find(fruit=>{
             return fruit.i === player.i && fruit.j === player.j;
         });
         if(collide){
             this.moveFruit(collide);
             player.addBlock();
+            // check if new high score
             if(player.body.length > this.highscore){
                 this.updateHighScore(player.body.length, player.username);
                 if(!player.newHighScore){
@@ -177,6 +206,8 @@ class Game{
                 player.newHighScore = true;
             }
         }
+
+        // check if player died by crashing out of bounds, into another player, or themself 
         const death = this.players.some(other=>{
             if(other.dead || !other.playing) return;
             if(player !== other){
@@ -188,12 +219,14 @@ class Game{
                     return true;
                 }
             }
+
+            // check if player crashed into itself or another player
             const body = other.body;
             return body.some(block=>{
                 const death = player.i === block.i && player.j === block.j;
                 if(death){
                     if(player === other){
-                        player.deathMessage = `${player.username} killed thyself, LOL`;
+                        player.deathMessage = `${player.username} killed thyself`;
                     } else{
                         for(let i=0;i<player.body.length;i++){
                             other.addBlock();
@@ -204,14 +237,16 @@ class Game{
                 return death;
             });
         })
+        // if dead update, else check if out of bounds
         if(death){
             player.dead = true;
         } else{
             if(player.i < 0 || player.i === this.rows || player.j < 0 || player.j === this.cols){
                 player.dead = true;
-                player.deathMessage = `${player.username} went out of bounds, LOL`;
+                player.deathMessage = `${player.username} went out of bounds`;
             }
         }
+        // if dead, then send check if they beat high score, then send message
         if(player.dead){
             this.addMessage(player.deathMessage);
             if(player.newHighScore){
@@ -219,11 +254,14 @@ class Game{
             } else{
                 player.deathMessage = "";
             }
+
+            // start explosion process and reset body
             player.startExplosion();
         }
     }
 
     removePlayer(id){
+        // remove player with socket id from player array
         let name = "";
         this.players = this.players.filter(player=>{
             const notPlayer = player.id !== id;

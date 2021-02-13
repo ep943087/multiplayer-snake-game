@@ -1,20 +1,27 @@
 
+// socket connection to server
 const socket = io();
 
+// element pointers
 const gameOverMenu = document.querySelector('.game__death');
 const playAgainButton = document.querySelector('#play-again');
 const quit = document.querySelector('#quit');
 const scores = document.querySelector('.scores');
 
-
+// when connected to socket server, then initialize event listeners
 socket.on('connect',()=>{
+    // join game
     socket.emit('join',{
         username,
         color
     })
+
+    // once server allows user to join, then start drawing
     socket.on('joined',()=>{
         draw();
     })
+
+    // when server updates game logic, then update variables on client side
     socket.on('update',(gameLogic)=>{
         players = gameLogic.players;
         pos = gameLogic.pos;
@@ -36,6 +43,8 @@ socket.on('connect',()=>{
             `;
         })
     })
+
+    // when server says you are dead, then show game over screen
     socket.on('death',({score,msg})=>{
         document.querySelector('.final-score').innerHTML = score;
         document.querySelector('.death-message').innerHTML = msg;
@@ -43,15 +52,18 @@ socket.on('connect',()=>{
     });
 })
 
+// play again button
 playAgainButton.addEventListener('click',e=>{
     socket.emit('play-again');
     gameOverMenu.classList.remove('show');
 })
 
+// quit button
 quit.addEventListener('click',e=>{
     window.location.href = "/";
 })
 
+// when arrays are pushed, then tell server to change direction
 document.addEventListener('keydown',(e)=>{
     e.preventDefault();
     switch(e.key){
@@ -77,6 +89,7 @@ document.addEventListener('keydown',(e)=>{
 let oM;
 let m;
 
+// return x,y of touch position
 function getTouchPos(e,i){
 	let rect = c.getBoundingClientRect();
 	return{
@@ -85,6 +98,7 @@ function getTouchPos(e,i){
 	}
 }
 
+// check if user touches screen
 document.addEventListener('touchstart',e=>{
 	if(e.target==c)
 		e.preventDefault();
@@ -95,18 +109,19 @@ document.addEventListener('touchmove',e=>{
 		e.preventDefault();
 },{passive: false});
 
+// when puts finger on screen
 c.addEventListener('touchstart',e=>{
 	oM = getTouchPos(e,e.touches.length-1);	
 }, false);
 
+// calculate angle from original position to new position
 c.addEventListener('touchmove',e=>{
         m = getTouchPos(e,e.touches.length-1);
         angle = Math.atan2(m.y-oM.y,m.x-oM.x);
         socket.emit('change-angle',{angle});
-	//oM = m;
-
 },false);
 
+// when user removes finger from screen
 document.addEventListener('touchend',e=>{
 	if(e.touches.length==0){
 		pm = "none";
