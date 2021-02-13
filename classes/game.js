@@ -237,6 +237,17 @@ class Game{
         })
     }
 
+    isNewHighScore(player){
+        if(player.body.length > this.highscore){
+            this.updateHighScore(player.body.length, player.username);
+            if(!player.newHighScore){
+                const message = `NEW HIGHSCORE by ${player.username}!`;
+                this.messages.push(message);
+            }
+            player.newHighScore = true;
+        }
+    }
+
     collision(player){
         // check collision logic
 
@@ -266,14 +277,7 @@ class Game{
             this.moveFruit(collide);
             player.addBlock();
             // check if new high score
-            if(player.body.length > this.highscore){
-                this.updateHighScore(player.body.length, player.username);
-                if(!player.newHighScore){
-                    const message = `NEW HIGHSCORE by ${player.username}!`;
-                    this.messages.push(message);
-                }
-                player.newHighScore = true;
-            }
+            this.isNewHighScore(player);
         }
 
         // check if player died by crashing out of bounds, into another player, or themself 
@@ -285,6 +289,7 @@ class Game{
                     for(let i=0;i<player.body.length;i++){
                         other.addBlock();
                     }
+                    this.isNewHighScore(other);
                     return true;
                 }
             }
