@@ -15,7 +15,10 @@ class Game{
         this.players = [];
 
         // number of fruits in game
-        this.fruitCount = 150;
+        this.fruitCount = 80;
+        this.poisonCount = 12;
+        this.poisonSize = 4;
+
         this.messages = [];
         
         this.allTimeHighest = {
@@ -23,6 +26,7 @@ class Game{
             username: "No one",
         }
         this.setFruits();
+        this.setPoison();
         this.setHighScore();
     }
     setHighScore(){
@@ -68,6 +72,16 @@ class Game{
         }
     }
 
+    setPoison(){
+        // add poison to poison array based on poison count
+        this.poison = [];
+        let row = 5;
+        for(let i=0;i<this.poisonCount;i++){
+            row += 5;
+            this.addPoison(row,row);
+        }
+    }
+
     moveFruit(fruit){
         // move fruit to new position on grid
         const {i,j} = this.getIJ();
@@ -78,9 +92,13 @@ class Game{
     addFruit(){
         // add fruit to array of fruits
         const {i,j} = this.getIJ();
-        this.fruits.push({
-            i,j
-        });
+        this.fruits.push({i,j});
+    }
+
+    addPoison(i,j){
+        // add poison to array of poison
+        const direction = 1+Math.floor(Math.random()*4);
+        this.poison.push({i,j,size:this.poisonSize,direction});
     }
 
     getIJ(){
@@ -115,6 +133,7 @@ class Game{
                     j: player.j,
                     playing: player.playing,
                     dir: player.dir,
+                    score: player.body.length
                 }
             }
         }
@@ -184,11 +203,61 @@ class Game{
             player.move();
             this.collision(player);
         })
+        this.poison.forEach(poison=>{
+            switch(poison.direction){
+                case UP:
+                    poison.i--;
+                    if(poison.i <= 0){
+                        poison.i = 0;
+                        poison.direction = DOWN;
+                    }
+                    break;
+                case DOWN:
+                    poison.i++;
+                    if(poison.i >= this.rows-1){
+                        poison.i = this.rows-1;
+                        poison.direction = UP;
+                    }
+                    break;
+                case LEFT:
+                    poison.j--;
+                    if(poison.j <= 0){
+                        poison.j = 0;
+                        poison.direction = RIGHT;
+                    }
+                    break;
+                case RIGHT:
+                    poison.j++
+                    if(poison.j >= this.cols-1){
+                        poison.j = this.cols-1;
+                        poison.direction = LEFT;
+                    }
+                    break;
+            }
+        })
     }
 
     collision(player){
         // check collision logic
 
+        // check if poisoned
+        const poisoned = this.poison.find(p=>{
+            return player.i >= p.i && player.i < p.i+p.size && player.j >= p.j && player.j < p.j+p.size;
+        });
+
+        // if dead, then send check if they beat high score, then send message
+        if(poisoned){
+            player.dead = true;
+            this.addMessage(`${player.username} ate poison and died`);
+            if(player.newHighScore){
+                player.deathMessage = "NEW HIGH SCORE!";
+            } else{
+                player.deathMessage = "";
+            }
+
+            // start explosion process and reset body
+            return player.startExplosion();
+        }
         // if ate a fruit, then move fruit and add to body
         const collide = this.fruits.find(fruit=>{
             return fruit.i === player.i && fruit.j === player.j;

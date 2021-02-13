@@ -6,6 +6,7 @@ let pos = null;
 let rows = null;
 let cols = null;
 let fruits = null;
+let poison = null;
 let messages = null;
 const UP = 1;
 const RIGHT = 2;
@@ -61,7 +62,6 @@ const drawPlayer = (player) => {
     ctx.textAlign = "center";
     const y = player.dir === DOWN? 1.5*pw : -pw;
     ctx.fillText(player.username,player.j*pw+pw/2,player.i*pw+pw/2+y);
-
 }
 
 // draw each square of user
@@ -73,9 +73,18 @@ const drawBody = (body,color) => {
 
 // draw each fruit 
 const drawFruit = (fruit) => {
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "rgb(0,255,0)";
     const dif = 10;
     ctx.fillRect(fruit.j*pw+dif/2,fruit.i*pw+dif/2,pw-dif,pw-dif);
+}
+
+// draw each poison
+const drawPoison = (poison) => {
+    //ctx.fillStyle = style.getPropertyValue('--darkest');
+    ctx.fillStyle = "red";
+    const dif = 10;
+    const pw3 = pw*poison.size;
+    ctx.fillRect(poison.j*pw+dif/2,poison.i*pw+dif/2,pw3-dif,pw3-dif);
 }
 
 // draw eyes of player on their head
@@ -191,7 +200,7 @@ const draw = () => {
     drawGrid();
 
     fruits.forEach((fruit)=>drawFruit(fruit));
-
+    poison.forEach((p)=>drawPoison(p));
     players.forEach((player)=>drawPlayer(player));
 
     ctx.restore();
@@ -237,4 +246,11 @@ const draw = () => {
         ctx.lineWidth = 1;
     }
 
+    // draw score
+
+    ctx.fillStyle = "white";
+    ctx.font = "17px Monospace";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText("Your Score: " + pos.score,10,10);
 }

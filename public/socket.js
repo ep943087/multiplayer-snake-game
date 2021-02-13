@@ -29,6 +29,7 @@ socket.on('connect',()=>{
         cols = gameLogic.cols;
         fruits = gameLogic.fruits;
         messages = gameLogic.messages;
+        poison = gameLogic.poison;
         const highscore = gameLogic.highscore;
         const highscore_name = gameLogic.highscore_name;
         document.querySelector('.highscore').innerHTML = `${highscore_name}: ${highscore}`;
