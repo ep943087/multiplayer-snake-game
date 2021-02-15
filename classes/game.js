@@ -16,7 +16,7 @@ class Game{
 
         // number of fruits in game
         this.fruitCount = 80;
-        this.poisonCount = 12;
+        this.poisonCount = 11;
         this.poisonSize = 3;
 
         this.messages = [];
@@ -196,12 +196,13 @@ class Game{
     }
 
     update(){
+
+
         // this function updates game logic, move players and explosions, also collision logic
         this.players.forEach(player=>{
             if(player.dead) player.moveExplosions();
             if(!player.playing || player.dead) return;
             player.move();
-            this.collision(player);
         })
         this.poison.forEach(poison=>{
             switch(poison.direction){
@@ -235,6 +236,10 @@ class Game{
                     break;
             }
         })
+
+        this.players.forEach(player=>{
+            this.collision(player);
+        })
     }
 
     isNewHighScore(player){
@@ -249,6 +254,7 @@ class Game{
     }
 
     collision(player){
+        if(player.dead) return;
         // check collision logic
 
         // check if poisoned

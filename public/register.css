@@ -10,6 +10,10 @@ body{
 
 .register{
     animation: come-in 1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 .register input[type="submit"]{
@@ -23,6 +27,16 @@ body{
     color: var(--darkest);
     background-color: var(--dark);
     cursor: pointer;
+}
+
+.github{
+    color: var(--dark);
+    padding: 5px;
+}
+
+.github:hover{
+    color: var(--darkest);
+    background-color: var(--dark);
 }
 
 @keyframes come-in{
