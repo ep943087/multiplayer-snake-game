@@ -15,7 +15,7 @@ class Game{
         this.players = [];
 
         // number of fruits in game
-        this.fruitCount = 80;
+        this.fruitCount = 60;
         this.poisonCount = 11;
         this.poisonSize = 3;
 
@@ -244,6 +244,9 @@ class Game{
 
     isNewHighScore(player){
         if(player.body.length > this.highscore){
+            this.setHighScore();
+            if(player.body.length < this.highscore)
+                return;
             this.updateHighScore(player.body.length, player.username);
             if(!player.newHighScore){
                 const message = `NEW HIGHSCORE by ${player.username}!`;
